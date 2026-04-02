@@ -1,0 +1,1 @@
+学习了规约(mainReduction.cpp)、共享和私有(mainShare.cpp)、和向量化(mainVectored.cpp)操作

@@ -69,28 +69,28 @@ include CMakeFiles/computePI.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/computePI.dir/flags.make
 
-CMakeFiles/computePI.dir/main.o: CMakeFiles/computePI.dir/flags.make
-CMakeFiles/computePI.dir/main.o: /root/CppCode/LearnParallel/computePIByOmp/main.cpp
-CMakeFiles/computePI.dir/main.o: CMakeFiles/computePI.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/CppCode/LearnParallel/computePIByOmp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/computePI.dir/main.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/computePI.dir/main.o -MF CMakeFiles/computePI.dir/main.o.d -o CMakeFiles/computePI.dir/main.o -c /root/CppCode/LearnParallel/computePIByOmp/main.cpp
+CMakeFiles/computePI.dir/mainShare.o: CMakeFiles/computePI.dir/flags.make
+CMakeFiles/computePI.dir/mainShare.o: /root/CppCode/LearnParallel/computePIByOmp/mainShare.cpp
+CMakeFiles/computePI.dir/mainShare.o: CMakeFiles/computePI.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/CppCode/LearnParallel/computePIByOmp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/computePI.dir/mainShare.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/computePI.dir/mainShare.o -MF CMakeFiles/computePI.dir/mainShare.o.d -o CMakeFiles/computePI.dir/mainShare.o -c /root/CppCode/LearnParallel/computePIByOmp/mainShare.cpp
 
-CMakeFiles/computePI.dir/main.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/computePI.dir/main.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/CppCode/LearnParallel/computePIByOmp/main.cpp > CMakeFiles/computePI.dir/main.i
+CMakeFiles/computePI.dir/mainShare.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/computePI.dir/mainShare.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/CppCode/LearnParallel/computePIByOmp/mainShare.cpp > CMakeFiles/computePI.dir/mainShare.i
 
-CMakeFiles/computePI.dir/main.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/computePI.dir/main.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/CppCode/LearnParallel/computePIByOmp/main.cpp -o CMakeFiles/computePI.dir/main.s
+CMakeFiles/computePI.dir/mainShare.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/computePI.dir/mainShare.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/CppCode/LearnParallel/computePIByOmp/mainShare.cpp -o CMakeFiles/computePI.dir/mainShare.s
 
 # Object files for target computePI
 computePI_OBJECTS = \
-"CMakeFiles/computePI.dir/main.o"
+"CMakeFiles/computePI.dir/mainShare.o"
 
 # External object files for target computePI
 computePI_EXTERNAL_OBJECTS =
 
-computePI: CMakeFiles/computePI.dir/main.o
+computePI: CMakeFiles/computePI.dir/mainShare.o
 computePI: CMakeFiles/computePI.dir/build.make
 computePI: /usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so
 computePI: /usr/lib/x86_64-linux-gnu/libpthread.a

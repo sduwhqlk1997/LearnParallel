@@ -1,3 +1,0 @@
-/root/CppCode/LearnParallel/build/CMakeFiles/omp_1.dir
-/root/CppCode/LearnParallel/build/CMakeFiles/edit_cache.dir
-/root/CppCode/LearnParallel/build/CMakeFiles/rebuild_cache.dir

@@ -1,1 +1,0 @@
-/usr/bin/g++ -O3 -DNDEBUG -rdynamic CMakeFiles/omp_1.dir/1.o -o omp_1  -lgomp -Wl,-Bstatic -lpthread -Wl,-Bdynamic 

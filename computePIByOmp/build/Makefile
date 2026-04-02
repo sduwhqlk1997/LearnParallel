@@ -130,19 +130,19 @@ computePI/fast:
 .PHONY : computePI/fast
 
 # target to build an object file
-main.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/computePI.dir/build.make CMakeFiles/computePI.dir/main.o
-.PHONY : main.o
+mainShare.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/computePI.dir/build.make CMakeFiles/computePI.dir/mainShare.o
+.PHONY : mainShare.o
 
 # target to preprocess a source file
-main.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/computePI.dir/build.make CMakeFiles/computePI.dir/main.i
-.PHONY : main.i
+mainShare.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/computePI.dir/build.make CMakeFiles/computePI.dir/mainShare.i
+.PHONY : mainShare.i
 
 # target to generate assembly for a file
-main.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/computePI.dir/build.make CMakeFiles/computePI.dir/main.s
-.PHONY : main.s
+mainShare.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/computePI.dir/build.make CMakeFiles/computePI.dir/mainShare.s
+.PHONY : mainShare.s
 
 # Help Target
 help:
@@ -153,9 +153,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... computePI"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... mainShare.o"
+	@echo "... mainShare.i"
+	@echo "... mainShare.s"
 .PHONY : help
 
 

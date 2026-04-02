@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/computePI.dir/main.o"
-  "CMakeFiles/computePI.dir/main.o.d"
+  "CMakeFiles/computePI.dir/mainShare.o"
+  "CMakeFiles/computePI.dir/mainShare.o.d"
   "computePI"
   "computePI.pdb"
 )

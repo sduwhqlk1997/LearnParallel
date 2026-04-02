@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/root/CppCode/LearnParallel/computePIByOmp/main.cpp" "CMakeFiles/computePI.dir/main.o" "gcc" "CMakeFiles/computePI.dir/main.o.d"
+  "/root/CppCode/LearnParallel/computePIByOmp/mainShare.cpp" "CMakeFiles/computePI.dir/mainShare.o" "gcc" "CMakeFiles/computePI.dir/mainShare.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

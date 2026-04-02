@@ -1,5 +1,5 @@
-CMakeFiles/computePI.dir/main.o: \
- /root/CppCode/LearnParallel/computePIByOmp/main.cpp \
+CMakeFiles/computePI.dir/mainReduction.o: \
+ /root/CppCode/LearnParallel/computePIByOmp/mainReduction.cpp \
  /usr/include/stdc-predef.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h \
  /usr/include/c++/13/iostream /usr/include/c++/13/bits/requires_hosted.h \
