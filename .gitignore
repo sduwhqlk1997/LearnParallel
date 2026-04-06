@@ -1,2 +1,16 @@
+# VSCode 配置
 .vscode/
+
+# CMake 编译产物
 build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+
+# 可执行文件
+*.out
+*.exe
+
+# 日志、临时文件
+*.log
+.DS_Store
