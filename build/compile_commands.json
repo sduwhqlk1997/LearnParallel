@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/root/CppCode/LearnParallel/build",
+  "command": "/usr/bin/g++   -O3 -DNDEBUG -std=gnu++17 -fopenmp -o CMakeFiles/omp_1.dir/1.o -c /root/CppCode/LearnParallel/omp/1.cpp",
+  "file": "/root/CppCode/LearnParallel/omp/1.cpp",
+  "output": "CMakeFiles/omp_1.dir/1.o"
+}
+]
