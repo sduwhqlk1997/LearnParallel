@@ -1,4 +1,4 @@
-# Install script for directory: /root/CppCode/LearnParallel/mpi
+# Install script for directory: /home/qiu/learnHPC/LearnParallel/mpi
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/root/CppCode/LearnParallel/mpi/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/qiu/learnHPC/LearnParallel/mpi/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
