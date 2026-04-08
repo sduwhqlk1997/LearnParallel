@@ -1,3 +1,0 @@
-/home/qiu/learnHPC/LearnParallel/mpi/build/CMakeFiles/main.dir
-/home/qiu/learnHPC/LearnParallel/mpi/build/CMakeFiles/edit_cache.dir
-/home/qiu/learnHPC/LearnParallel/mpi/build/CMakeFiles/rebuild_cache.dir
