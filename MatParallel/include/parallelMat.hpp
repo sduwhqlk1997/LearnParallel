@@ -127,21 +127,24 @@ public:
                      displs_list.data(),
                      MPI_DOUBLE,
                      recv_vals.data(),
-                     my_nnz, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+                     my_nnz, MPI_DOUBLE, 
+                     0, MPI_COMM_WORLD);
 
         MPI_Scatterv(send_inners.data(),
                      nnz_list.data(),
                      displs_list.data(),
                      MPI_INT,
                      recv_inners.data(),
-                     my_nnz, MPI_INT, 0, MPI_COMM_WORLD);
+                     my_nnz, MPI_INT, 
+                     0, MPI_COMM_WORLD);
 
         MPI_Scatterv(send_outers.data(),
                      outer_counts.data(),
                      outer_displs.data(),
                      MPI_INT,
                      recv_outers.data(),
-                     my_rows + 1, MPI_INT, 0, MPI_COMM_WORLD);
+                     my_rows + 1, MPI_INT, 
+                     0, MPI_COMM_WORLD);
 
         localA.resize(my_rows, global_cols);
         localA.resizeNonZeros(my_nnz);
