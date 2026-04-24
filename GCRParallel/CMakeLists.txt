@@ -8,8 +8,8 @@ set(CMAKE_BUILD_TYPE RELEASE)
 
 find_package(MPI REQUIRED)
 # find_package(OpenMP REQUIRED)
-#include_directories(/home/qiu/qlk/Cppackage/Eigen/eigen-5.0.0) # jixiegeming
-include_directories(/root/Cppackage/eigen/eigen-5.0.0)
+include_directories(/home/qiu/qlk/Cppackage/Eigen/eigen-5.0.0) # jixiegeming
+#include_directories(/root/Cppackage/eigen/eigen-5.0.0)
 
 # find_path(MATIO_INCLUDE_DIR matio.h)
 # find_library(MATIO_LIBRARY NAMES matio)
