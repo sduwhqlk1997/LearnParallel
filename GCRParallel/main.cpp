@@ -1,26 +1,40 @@
 // #include "ParallelMatColMajor.hpp"
 #include <stdexcept>
 #include <fstream>
-#include "ParallelMatColMajor.hpp"
+#include <unistd.h>
 #include "ParallelVec.hpp"
-using SparseMat = Eigen::SparseMatrix<double, Eigen::ColMajor>;
+#include "parallelMat.hpp"
+// #include "ParallelMatColMajor.hpp"
+// #include "ParallelVec.hpp"
+// using SparseMat = Eigen::SparseMatrix<double, Eigen::ColMajor>;
+// using EigenVec = Eigen::VectorXd;
+// using VecDouble = std::vector<double>;
+// using VecInt = std::vector<int>;
 void readSparseMatrixFromTxt(const std::string &filePath,
                              SparseMat &sparseMat,
                              int rows = -1,
                              int cols = -1);
 bool readVectorFromTxt(const std::string &filePath, std::vector<double> &vec);
-bool ParallelGCR(VecDouble &resHis, int &iter, ParallelVec &x,
+bool ParallelGCR(VecDouble &resHis, int &iter, EigenVec &x,
                  const int maxit, const double epcl,
-                 const ParallelMatColMajor A, const ParallelVec b, const int size, const int rank); // 并行GCR算法
+                 const ParallelMatrix A, const ParallelVec b, const int size, const int rank); // 并行GCR算法
 int main(int argc, char *argv[])
 {
+#ifdef DEBUG
+    {
+        int i = 0;
+        while (0 == i)
+        {
+            sleep(1);
+        }
+    }
+#endif
     SparseMat mat;
     VecDouble vec;
-    VecDouble x0;
     int rank, size;
     MPI_Init(&argc, &argv);
-    ParallelMatColMajor A;
-    ParallelVec f, xk;
+    ParallelMatrix A;
+    ParallelVec f;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     if (0 == rank) // 从txt文件读取稀疏矩阵并存入mat
@@ -54,8 +68,6 @@ int main(int argc, char *argv[])
         {
             std::cout << "读取失败！" << std::endl;
         }
-        /*设置初始解*/
-        x0.assign(vec.size(), 0.0);
         // std::cout << "mat =" << std::endl;
         // for (int k = 0; k < mat.outerSize(); ++k)
         // {
@@ -68,90 +80,74 @@ int main(int argc, char *argv[])
         // }
         // std::cout << std::endl;
     }
-    A.distribute(mat, mat.rows(), mat.cols());
-    // A.printLocalMatrix();
+    A.distribute(mat, 3375, 3375);
     f.distribute(vec);
-    xk.distribute(x0);
+
+    /*设置初始解*/
+    // EigenVec f = Eigen::Map<EigenVec>(vec.data(), vec.size());
+    EigenVec x0 = EigenVec::Zero(3375);
     /*测试分片矩阵向量乘法*/
-    EigenVec serrial_result, local_result, global_result;
-    if (0 == rank)
-    {
-        EigenVec globalvec = Eigen::Map<EigenVec>(vec.data(), vec.size());
-        serrial_result = mat * globalvec;
-    }
-    local_result = A.localA * f.localV;
-    int local_size = local_result.size();
-    VecInt local_sizes(size);
-    MPI_Gather(&local_size, 1, MPI_INT, local_sizes.data(), 1, MPI_INT, 0, MPI_COMM_WORLD);
-    VecInt displacements(size, 0);
-    int total_size = 0;
-    if (rank == 0)
-    {
-        for (int i = 0; i < size; ++i)
-        {
-            displacements[i] = total_size;
-            total_size += local_sizes[i];
-        }
-        global_result.resize(total_size);
-    }
-    MPI_Gatherv(local_result.data(), local_size, MPI_DOUBLE,
-                global_result.data(), local_sizes.data(), displacements.data(),
-                MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    if (0 == rank)
-    {
-        EigenVec err = local_result - serrial_result;
-        double res = err.norm();
-        res /= serrial_result.norm();
-        std::cout << "分片矩阵乘向量误差为：" << res << std::endl;
-    }
-    /*GCR迭代*/
-    // VecDouble resHis;
-    // int maxit = 50;
-    // int iter;
-    // double epcl = 1e-4;
-    // bool flag = ParallelGCR(resHis, iter, xk, maxit, epcl, A, f, size, rank);
-    // for (int i = 0; i < resHis.size();i++){
-    //     std::cout << resHis[i] << std::endl;
+    // EigenVec serrial_result, local_result, global_result;
+    // if (0 == rank)
+    // {
+    //     EigenVec globalvec = Eigen::Map<EigenVec>(vec.data(), vec.size());
+    //     serrial_result = mat * globalvec;
+    //     global_result.resize(vec.size());
     // }
+    // local_result = A.localA * f.localV;
+    // MPI_Reduce(local_result.data(), global_result.data(), local_result.size(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    // if (0 == rank)
+    // {
+    //     EigenVec err = global_result - serrial_result;
+    //     double res = err.norm();
+    //     res /= serrial_result.norm();
+    //     std::cout << "分片矩阵乘向量误差为：" << res << std::endl;
+    // }
+    /*GCR迭代*/
+    VecDouble resHis;
+    int maxit = 50;
+    int iter;
+    double epcl = 1e-4;
+    bool flag = ParallelGCR(resHis, iter, x0, maxit, epcl, A, f, size, rank);
+    for (int i = 0; i < resHis.size(); i++)
+    {
+        std::cout << resHis[i] << std::endl;
+    }
     // f.printLocalVec();
     MPI_Finalize();
     return 0;
 }
-void readSparseMatrixFromTxt(const std::string &filePath,
-                             SparseMat &sparseMat,
+void readSparseMatrixFromTxt(const std::string& filePath,
+                             SparseMat& sparseMat,
                              int rows,
                              int cols)
 {
     std::ifstream file(filePath);
-    if (!file.is_open())
-    {
+    if (!file.is_open()) {
         throw std::runtime_error("无法打开文件：" + filePath);
     }
 
     using Triplet = Eigen::Triplet<double>;
     std::vector<Triplet> triplets;
 
-    // ===================== 修复：必须用 double 读取 =====================
-    double i, j; // 原来这里是 int，导致读取失败！
+    // 支持读取科学计数法浮点数格式的行列索引
+    double i, j;
     double val;
-    // ====================================================================
 
     int max_row = 0, max_col = 0;
 
-    // 现在可以正常读取了
-    while (file >> i >> j >> val)
-    {
-        // 转成整数索引（1→0）
+    // 正常读取你的数据
+    while (file >> i >> j >> val) {
+        // 1起始索引 → 0起始索引
         int eigen_i = static_cast<int>(i) - 1;
         int eigen_j = static_cast<int>(j) - 1;
 
         triplets.emplace_back(eigen_i, eigen_j, val);
 
-        // 更新最大行列
-        if (static_cast<int>(i) > max_row)
-            max_row = static_cast<int>(i);
-        if (static_cast<int>(j) > max_col)
-            max_col = static_cast<int>(j);
+        // 记录最大行列
+        if (static_cast<int>(i) > max_row) max_row = static_cast<int>(i);
+        if (static_cast<int>(j) > max_col) max_col = static_cast<int>(j);
     }
 
     file.close();
@@ -159,11 +155,11 @@ void readSparseMatrixFromTxt(const std::string &filePath,
     int mat_rows = (rows > 0) ? rows : max_row;
     int mat_cols = (cols > 0) ? cols : max_col;
 
-    if (mat_rows <= 0 || mat_cols <= 0)
-    {
+    if (mat_rows <= 0 || mat_cols <= 0) {
         throw std::runtime_error("矩阵尺寸无效，请检查文件是否为空或索引错误");
     }
 
+    // 赋值给 行优先 稀疏矩阵
     sparseMat.resize(mat_rows, mat_cols);
     sparseMat.setFromTriplets(triplets.begin(), triplets.end());
 }
@@ -201,12 +197,15 @@ bool readVectorFromTxt(const std::string &filePath, std::vector<double> &vec)
     inFile.close();
     return true;
 }
-bool ParallelGCR(VecDouble &resHis, int &iter, ParallelVec &x,
+bool ParallelGCR(VecDouble &resHis, int &iter, EigenVec &x,
                  const int maxit, const double epcl,
-                 const ParallelMatColMajor A, const ParallelVec b, const int size, const int rank)
+                 const ParallelMatrix A, const ParallelVec b, const int size, const int rank)
 {
     EigenVec r(b.localSize);
-    r = A.localA * x.localV;
+    // std::cout << "local_rows: " << A.local_rows<< ", local_cols: " << A.local_cols << std::endl;
+    // std::cout << "rank: " << rank << "localA_size: "<<A.localA.rows()<< ", "<<A.localA.cols()<<" xsize: "<<x.size()<<std::endl;
+    r = A.localA * x;
+    // std::cout << "rank: " << rank << std::endl;
     r = b.localV - r;
     double rNormlocal = r.squaredNorm();
     double res;
@@ -224,7 +223,8 @@ bool ParallelGCR(VecDouble &resHis, int &iter, ParallelVec &x,
     p.push_back(r);
     VecDouble ApAp;
     std::vector<EigenVec> Ap;
-    EigenVec Ap_k = A.localA * p[0];
+    EigenVec Ap_k = A.localA * p[0]; // 问题出在这！，这里理应乘完整长度的p
+    std::cout << "rank: " << rank << "localA_size: "<<A.localA.rows()<< ", "<<A.localA.cols()<<" psize: "<<p[0].size()<<std::endl;
     Ap.push_back(Ap_k);
     double ApAp_k = Ap_k.squaredNorm();
     double ApAp_result;
@@ -238,7 +238,7 @@ bool ParallelGCR(VecDouble &resHis, int &iter, ParallelVec &x,
         local_alpha = r.dot(Ap[k - 1]);
         local_alpha = local_alpha / ApAp[k - 1];
         MPI_Allreduce(&local_alpha, &alpha, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-        x.localV += alpha * p[k - 1];
+        x += alpha * p[k - 1];
         r -= alpha * Ap[k - 1];
         rNormlocal = r.squaredNorm();
         MPI_Reduce(&rNormlocal, &res, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
