@@ -47,60 +47,59 @@ int main(int argc, char *argv[])
         std::cout << "是复值矩阵" << std::endl;
     }
 
-    /*
-    // ===================== 3. 提取稀疏矩阵基础信息 =====================
-    int rows = matVar->dims[0];    // 矩阵行数
-    int cols = matVar->dims[1];    // 矩阵列数
-    int nnz  = matVar->nbytes / sizeof(double); // 非零元素个数（实部+虚部）
+    int rows = matVar->dims[0];
+    int cols = matVar->dims[1];
+    // int nnz = matVar->nbytes / sizeof(double); // 非零元素个数（实部+虚部）
 
     std::cout << "矩阵尺寸: " << rows << " x " << cols << std::endl;
-    std::cout << "非零元素个数: " << nnz / 2 << std::endl; // 复数：实部+虚部
+    // std::cout << "非零元素个数: " << nnz / 2 << std::endl; // 复数：实部+虚部
 
     // ===================== 4. 提取 行索引、列索引、实部、虚部 =====================
-    // matio 内部存储：稀疏矩阵数据存在 data->sparse 结构体中
-    mat_sparse_t* sparseData = static_cast<mat_sparse_t*>(matVar->data);
-    
-    // 索引（MATLAB：1 开头 → C++：0 开头，后面要减 1）
-    int* ir = sparseData->ir;     // 非零元素 行索引
-    int* jc = sparseData->jc;     // 列指针（CSC 格式）
-    // 数值
-    double* pr = sparseData->data; // 实部
-    double* pi = pr + nnz / 2;     // 虚部（紧跟在实部后面）
+    mat_sparse_t *sparseData = static_cast<mat_sparse_t *>(matVar->data);
 
-    // ===================== 5. 存入 Eigen 稀疏矩阵 =====================
-    SpMatrixXd eigenMat(rows, cols);
-    // 预分配非零元素（提升效率）
-    eigenMat.reserve(nnz / 2);
+    // 索引（Matlab：1 开头->C++：0开头）
+    mat_uint32_t *ir = sparseData->ir;
+    mat_uint32_t *jc = sparseData->jc;
+    int nnz = jc[cols];
 
-    // CSC 格式遍历（Eigen 和 MATLAB 都是 CSC 存储）
-    for (int col = 0; col < cols; ++col) {
-        for (int idx = jc[col]; idx < jc[col + 1]; ++idx) {
-            int row = ir[idx];         // MATLAB 行索引
-            std::complex<double> val(pr[idx], pi[idx]); // 复数值
-            eigenMat.insert(row, col) = val; // 插入 Eigen
+    std::cout << "非零元素个数:" << nnz << std::endl;
+    // 5.读取复数数据
+    mat_complex_split_t *complexData = static_cast<mat_complex_split_t *>(sparseData->data);
+
+    double *realPart = static_cast<double *>(complexData->Re);
+    double *imagPart = static_cast<double *>(complexData->Im);
+
+    // 6.构造Eigen稀疏矩阵
+    SpMatrixXd K(rows, cols);
+
+    std::vector<Eigen::Triplet<std::complex<double>>> triplets;
+    triplets.reserve(nnz);
+
+    // CSC->Eigen
+    for (int j = 0; j < cols; ++j)
+    {
+        for (int idx = jc[j]; idx < jc[j + 1]; ++idx)
+        {
+            int i = ir[idx];
+            std::complex<double> val(realPart[idx], imagPart[idx]);
+
+            triplets.emplace_back(i, j, val);
         }
     }
-
-    // 压缩存储（Eigen 推荐操作）
-    eigenMat.makeCompressed();
-
-    // ===================== 6. 验证结果 =====================
-    std::cout << "\nEigen 稀疏矩阵读取完成！" << std::endl;
-    std::cout << "非零元素数量：" << eigenMat.nonZeros() << std::endl;
-
-    // 打印所有非零元素
-    for (int k = 0; k < eigenMat.outerSize(); ++k) {
-        for (SpMatrixXd::InnerIterator it(eigenMat, k); it; ++it) {
-            std::cout << "位置 (" << it.row() << ", " << it.col() << ") = " 
-                      << it.value() << std::endl;
-        }
+    K.setFromSortedTriplets(triplets.begin(), triplets.end());
+    K.makeCompressed();
+    std::cout << "Eigen 稀疏矩阵构造完成" << std::endl;
+    std::cout << "Eigen nnz: " << K.nonZeros() << std::endl;
+    for (int k = 0; k < std::min(10, (int)triplets.size()); ++k)
+    {
+        std::cout << "triplet[" << k << "] = ("
+                  << triplets[k].row() << ", "
+                  << triplets[k].col() << ") = "
+                  << triplets[k].value() << std::endl;
     }
 
-    // ===================== 7. 释放资源 =====================
+    // ===================== 8. 释放资源 =====================
     Mat_VarFree(matVar);
     Mat_Close(mat);
-
-    return EXIT_SUCCESS;
-    */
     return 0;
 }
